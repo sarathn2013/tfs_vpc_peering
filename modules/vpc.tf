@@ -79,6 +79,27 @@ resource "aws_route_table_association" "main-primary-vpc-public" {
 }
 
 
+# Creating route table for private subnet
+resource "aws_route_table" "primary-vpc-private" {
+   vpc_id = "${aws_vpc.primary-vpc.id}"
+    route {
+        cidr_block = "0.0.0.0/0"
+        nat_gateway_id = "${aws_nat_gateway.primary-nat-gw.id}"
+    }
+
+    tags {
+        Name = "primary-vpc-private"
+    }
+
+}
+
+# Associating route table to private subnet
+resource "aws_route_table_association" "main-primary-vpc-private" {
+    subnet_id = "${aws_subnet.primary-private-1.id}"
+    route_table_id = "${aws_route_table.primary-vpc-private.id}"
+}
+
+
 # Creating secondary vpc 
 resource "aws_vpc" "secondary-vpc" {
     cidr_block = "172.30.0.0/16"
@@ -145,6 +166,28 @@ resource "aws_route_table_association" "main-secondary-vpc-public" {
     subnet_id = "${aws_subnet.secondary-public-1.id}"
     route_table_id = "${aws_route_table.secondary-vpc-public.id}"
 }
+
+
+# Creating route table for secondary vpc private
+resource "aws_route_table" "secondary-vpc-private" {
+    vpc_id = "${aws_vpc.secondary-vpc.id}"
+    route {
+        cidr_block = "0.0.0.0/0"
+        nat_gateway_id = "${aws_nat_gateway.secondary-nat-gw.id}"
+    }
+
+    tags {
+        Name = "secondary-vpc-private"
+    }
+}
+
+# route associations for secondary vpc private subnet
+resource "aws_route_table_association" "main-secondary-vpc-private" {
+    subnet_id = "${aws_subnet.secondary-private-1.id}"
+    route_table_id = "${aws_route_table.secondary-vpc-private.id}"
+}
+
+
 
 # Make AWS account ID available. 
 data "aws_caller_identity" "current" {}

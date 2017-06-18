@@ -1,10 +1,17 @@
-# Terraform script for vpc peering
+Terraform script for vpc peering
+===
+This terraform script will create a simple stack in aws with two vpc's with public and private subnets and internet gateways attached to public subnet and establishes a peering connection between two VPC's in the same AWS Account.
 
-This terraform script will create a simple stack in aws 
+Pre - Requisites:
+---
+Create SSH key using
 
-with two vpc's and establishes a peering connection between
+```
+ssh-keygen -f mykey
+```
+You will be using this key pair for launching ec2 instances.
 
-them.
+You also need to update the terraform.tfvars with your aws access keys
 
 
 
