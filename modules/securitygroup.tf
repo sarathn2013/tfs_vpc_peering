@@ -49,7 +49,7 @@ resource "aws_security_group" "primary-sg-private" {
       from_port = 22
       to_port = 22
       protocol = "tcp"
-      cidr_blocks = ["172.30.131.0/24"]
+      cidr_blocks = ["172.30.0.0/16"]
   }
 
   ingress {
@@ -63,7 +63,7 @@ resource "aws_security_group" "primary-sg-private" {
       from_port = 8
       to_port = -1
       protocol = "icmp"
-      cidr_blocks = ["172.30.131.0/24"]
+      cidr_blocks = ["172.30.0.0/16"]
   }
 
 }
@@ -111,37 +111,80 @@ resource "aws_security_group" "secondary-sg-private" {
       protocol = "-1"
       cidr_blocks = ["0.0.0.0/0"]
   }
-
   ingress {
       from_port = 22
       to_port = 22
       protocol = "tcp"
       cidr_blocks = ["172.30.131.0/24"]
   }
-
   ingress {
       from_port = 22
       to_port = 22
       protocol = "tcp"
-      cidr_blocks = ["10.0.1.0/24"]
+      cidr_blocks = ["10.0.0.0/16"]
   }
-
    ingress {
       from_port = 8
       to_port = -1
       protocol = "icmp"
       cidr_blocks = ["172.30.131.0/24"]
-  }
-  
+  }  
   ingress {
       from_port = 8
       to_port = -1
       protocol = "icmp"
-      cidr_blocks = ["10.0.1.0/24"]
+      cidr_blocks = ["10.0.0.0/16"]
+  }
+}
+
+# Creating security group for staging security group
+resource "aws_security_group" "staging-security-group" {
+  vpc_id = "${aws_vpc.secondary-vpc.id}"
+  name = "staging security group"
+  description = "security group that allows all egress and ssh,80,443 on egress"
+  egress {
+      from_port = 0
+      to_port = 0
+      protocol = "-1"
+      cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  ingress {
+      from_port = 22
+      to_port = 22
+      protocol = "tcp"
+      cidr_blocks = ["172.30.131.0/24"]
+  }
+
+   ingress {
+      from_port = 80
+      to_port = 80
+      protocol = "tcp"
+      cidr_blocks = ["172.30.131.0/24"]
+  }
+
+  ingress {
+      from_port = 443
+      to_port = 443
+      protocol = "tcp"
+      cidr_blocks = ["172.30.131.0/24"]
+  }
+
+}
+
+# Creating security group for database security group
+resource "aws_security_group" "database-security-group" {
+  vpc_id = "${aws_vpc.secondary-vpc.id}"
+  name = "database-security-group"
+  description = "security group that allows ssh and all egress traffic"
+
+   ingress {
+      from_port = 3306
+      to_port = 3306
+      protocol = "tcp"
+      cidr_blocks = ["172.30.131.0/24"]
   }
 
 
 
 }
-
-

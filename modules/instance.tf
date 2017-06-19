@@ -38,8 +38,8 @@ resource "aws_instance" "primary-vpc-private-instance" {
 
 
 
-# Creating ec2 instance and attaching it to public subnet of the secondary vpc
-resource "aws_instance" "secondary-vpc-public-instance" {
+# Creating VPN SERVER ec2 instance and attaching it to public subnet of the secondary vpc
+resource "aws_instance" "VPN_Server" {
   ami           = "${lookup(var.AMIS, var.AWS_REGION)}"
   instance_type = "t2.micro"
 
@@ -49,26 +49,47 @@ resource "aws_instance" "secondary-vpc-public-instance" {
 
   key_name = "${aws_key_pair.mykeypair.key_name}"
   tags {
-    Name = "secondary-vpc-public-instance"
+    Name = "VPN server"
    }
 }
 
 
-# Creating ec2 instance and attaching it to private subnet of the secondary vpc
-resource "aws_instance" "secondary-vpc-private-instance" {
+# Creating staging server and attaching private subnet of the secondary vpc
+resource "aws_instance" "staging-server" {
   ami           = "${lookup(var.AMIS, var.AWS_REGION)}"
   instance_type = "t2.micro"
 
   subnet_id = "${aws_subnet.secondary-private-1.id}"
 
-  vpc_security_group_ids = ["${aws_security_group.secondary-sg-private.id}"]
+  vpc_security_group_ids = ["${aws_security_group.staging-security-group.id}"]
 
   associate_public_ip_address = false
 
   key_name = "${aws_key_pair.mykeypair.key_name}"
   
   tags {
-    Name = "secondary-vpc-private-instance"
+    Name = "staging server"
    }
 }
+
+
+# Creating database server and attaching private subnet of the secondary vpc
+resource "aws_instance" "database-server" {
+  ami           = "${lookup(var.AMIS, var.AWS_REGION)}"
+  instance_type = "t2.micro"
+
+  subnet_id = "${aws_subnet.secondary-private-1.id}"
+
+  vpc_security_group_ids = ["${aws_security_group.database-security-group.id}"]
+
+  associate_public_ip_address = false
+
+  key_name = "${aws_key_pair.mykeypair.key_name}"
+  
+  tags {
+    Name = "database-server"
+   }
+}
+
+
 
