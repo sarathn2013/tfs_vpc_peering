@@ -1,5 +1,5 @@
-*vars.tf
-*terraform.tfstate
-*terraform.tfstate.backup
-*mykey
-*mykey.pub
+*vars.tf*
+*terraform.tfstate*
+*terraform.tfstate.backup*
+*mykey*
+*mykey.pub*
