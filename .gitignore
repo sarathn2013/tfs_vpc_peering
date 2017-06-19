@@ -1,0 +1,5 @@
+/modules/vars.tf
+/modules/terraform.tfstate
+/modules/terraform.tfstate.backup
+/modules/mykey
+/modules/mykey.pub

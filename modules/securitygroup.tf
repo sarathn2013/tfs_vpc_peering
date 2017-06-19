@@ -148,43 +148,62 @@ resource "aws_security_group" "staging-security-group" {
       protocol = "-1"
       cidr_blocks = ["0.0.0.0/0"]
   }
+}
 
-  ingress {
-      from_port = 22
-      to_port = 22
-      protocol = "tcp"
-      cidr_blocks = ["172.30.131.0/24"]
-  }
 
-   ingress {
-      from_port = 80
-      to_port = 80
-      protocol = "tcp"
-      cidr_blocks = ["172.30.131.0/24"]
-  }
 
-  ingress {
-      from_port = 443
-      to_port = 443
-      protocol = "tcp"
-      cidr_blocks = ["172.30.131.0/24"]
-  }
+resource "aws_security_group_rule" "staging-ingress-ssh" {
+
+        type = "ingress"
+        from_port = 22
+        to_port = 22
+        protocol = "tcp"
+        security_group_id = "${aws_security_group.staging-security-group.id}"
+        source_security_group_id = "${aws_security_group.secondary-sg-public.id}"
 
 }
+
+resource "aws_security_group_rule" "staging-ingress-http" {
+
+        type = "ingress"
+        from_port = 80
+        to_port = 80
+        protocol = "tcp"
+        security_group_id = "${aws_security_group.staging-security-group.id}"
+        source_security_group_id = "${aws_security_group.secondary-sg-public.id}"
+
+}
+
+resource "aws_security_group_rule" "staging-ingress-https" {
+
+        type = "ingress"
+        from_port = 443
+        to_port = 443
+        protocol = "tcp"
+        security_group_id = "${aws_security_group.staging-security-group.id}"
+        source_security_group_id = "${aws_security_group.secondary-sg-public.id}"
+
+}
+
+
+
 
 # Creating security group for database security group
 resource "aws_security_group" "database-security-group" {
   vpc_id = "${aws_vpc.secondary-vpc.id}"
   name = "database-security-group"
   description = "security group that allows ssh and all egress traffic"
-
-   ingress {
-      from_port = 3306
-      to_port = 3306
-      protocol = "tcp"
-      cidr_blocks = ["172.30.131.0/24"]
-  }
+  
+}
 
 
+resource "aws_security_group_rule" "mysql-ingress" {
+
+	type = "ingress"
+        from_port = 3306
+        to_port = 3306
+        protocol = "tcp"
+        security_group_id = "${aws_security_group.database-security-group.id}"
+        source_security_group_id = "${aws_security_group.secondary-sg-public.id}"
 
 }

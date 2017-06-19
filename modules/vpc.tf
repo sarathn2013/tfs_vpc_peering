@@ -1,9 +1,3 @@
-# Provider type aws
-provider "aws" {
-    region = "${var.AWS_REGION}"
-}
-
-
 # Resource keys for ssh into aws ec2 instances
 resource "aws_key_pair" "mykeypair" {
   key_name = "mykeypair"
@@ -29,7 +23,7 @@ resource "aws_subnet" "primary-public-1" {
     vpc_id = "${aws_vpc.primary-vpc.id}"
     cidr_block = "10.0.1.0/24"
     map_public_ip_on_launch = "true"
-    availability_zone = "us-east-1a"
+    availability_zone = "us-east-2a"
 
     tags {
         Name = "primary-public-1"
@@ -42,7 +36,7 @@ resource "aws_subnet" "primary-private-1" {
     vpc_id = "${aws_vpc.primary-vpc.id}"
     cidr_block = "10.0.2.0/24"
     map_public_ip_on_launch = "false"
-    availability_zone = "us-east-1a"
+    availability_zone = "us-east-2a"
 
     tags {
         Name = "primary-private-1"
@@ -117,7 +111,7 @@ resource "aws_subnet" "secondary-public-1" {
     vpc_id = "${aws_vpc.secondary-vpc.id}"
     cidr_block = "172.30.131.0/24"
     map_public_ip_on_launch = "true"
-    availability_zone = "us-east-1a"
+    availability_zone = "us-east-2a"
 
     tags {
         Name = "secondary-public-1"
@@ -130,7 +124,7 @@ resource "aws_subnet" "secondary-private-1" {
     vpc_id = "${aws_vpc.secondary-vpc.id}"
     cidr_block = "172.30.132.0/24"
     map_public_ip_on_launch = "false"
-    availability_zone = "us-east-1a"
+    availability_zone = "us-east-2a"
 
     tags {
         Name = "secondary-private-1"

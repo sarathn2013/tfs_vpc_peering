@@ -1,7 +1,7 @@
 
 # Creating ec2 instance and attaching it to public subnet of the primary vpc
 resource "aws_instance" "primary-vpc-public-instance" {
-  ami           = "${lookup(var.AMIS, var.AWS_REGION)}"
+  ami           = "${lookup(var.AMIS, var.region)}"
   instance_type = "t2.micro"
 
   subnet_id = "${aws_subnet.primary-public-1.id}"
@@ -17,7 +17,7 @@ resource "aws_instance" "primary-vpc-public-instance" {
 
 # Creating ec2 instance and attaching it to private subnet of the primary vpc
 resource "aws_instance" "primary-vpc-private-instance" {
-  ami           = "${lookup(var.AMIS, var.AWS_REGION)}"
+  ami           = "${lookup(var.AMIS, var.region)}"
   instance_type = "t2.micro"
 
   subnet_id = "${aws_subnet.primary-private-1.id}"
@@ -40,7 +40,7 @@ resource "aws_instance" "primary-vpc-private-instance" {
 
 # Creating VPN SERVER ec2 instance and attaching it to public subnet of the secondary vpc
 resource "aws_instance" "VPN_Server" {
-  ami           = "${lookup(var.AMIS, var.AWS_REGION)}"
+  ami           = "${lookup(var.AMIS, var.region)}"
   instance_type = "t2.micro"
 
   subnet_id = "${aws_subnet.secondary-public-1.id}"
@@ -56,7 +56,7 @@ resource "aws_instance" "VPN_Server" {
 
 # Creating staging server and attaching private subnet of the secondary vpc
 resource "aws_instance" "staging-server" {
-  ami           = "${lookup(var.AMIS, var.AWS_REGION)}"
+  ami           = "${lookup(var.AMIS, var.region)}"
   instance_type = "t2.micro"
 
   subnet_id = "${aws_subnet.secondary-private-1.id}"
@@ -75,7 +75,7 @@ resource "aws_instance" "staging-server" {
 
 # Creating database server and attaching private subnet of the secondary vpc
 resource "aws_instance" "database-server" {
-  ami           = "${lookup(var.AMIS, var.AWS_REGION)}"
+  ami           = "${lookup(var.AMIS, var.region)}"
   instance_type = "t2.micro"
 
   subnet_id = "${aws_subnet.secondary-private-1.id}"

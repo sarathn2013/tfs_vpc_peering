@@ -11,7 +11,7 @@ ssh-keygen -f mykey
 ```
 You will be using this key pair for launching ec2 instances.
 
-You also need to update the terraform.tfvars with your aws access keys
+You also need to update the vars.tf.example  with your aws access keys and rename the file to vars.tf
 
 
 
