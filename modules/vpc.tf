@@ -53,24 +53,6 @@ resource "aws_internet_gateway" "primary-vpc-igw" {
     }
 }
 
-# Creating routing table for primary vpc
-resource "aws_route_table" "primary-vpc-public" {
-    vpc_id = "${aws_vpc.primary-vpc.id}"
-    route {
-        cidr_block = "0.0.0.0/0"
-        gateway_id = "${aws_internet_gateway.primary-vpc-igw.id}"
-    }
-
-    tags {
-        Name = "primary-vpc-public"
-    }
-}
-
-# Associating route table to public subnet
-resource "aws_route_table_association" "main-primary-vpc-public" {
-    subnet_id = "${aws_subnet.primary-public-1.id}"
-    route_table_id = "${aws_route_table.primary-vpc-public.id}"
-}
 
 
 # Creating route table for private subnet
@@ -85,12 +67,6 @@ resource "aws_route_table" "primary-vpc-private" {
         Name = "primary-vpc-private"
     }
 
-}
-
-# Associating route table to private subnet
-resource "aws_route_table_association" "main-primary-vpc-private" {
-    subnet_id = "${aws_subnet.primary-private-1.id}"
-    route_table_id = "${aws_route_table.primary-vpc-private.id}"
 }
 
 
@@ -142,24 +118,6 @@ resource "aws_internet_gateway" "secondary-vpc-igw" {
     }
 }
 
-# Creating route table for secondary vpc
-resource "aws_route_table" "secondary-vpc-public" {
-    vpc_id = "${aws_vpc.secondary-vpc.id}"
-    route {
-        cidr_block = "0.0.0.0/0"
-        gateway_id = "${aws_internet_gateway.secondary-vpc-igw.id}"
-    }
-
-    tags {
-        Name = "secondary-vpc-public"
-    }
-}
-
-# route associations for secondary vpc public subnet
-resource "aws_route_table_association" "main-secondary-vpc-public" {
-    subnet_id = "${aws_subnet.secondary-public-1.id}"
-    route_table_id = "${aws_route_table.secondary-vpc-public.id}"
-}
 
 
 # Creating route table for secondary vpc private
@@ -175,15 +133,8 @@ resource "aws_route_table" "secondary-vpc-private" {
     }
 }
 
-# route associations for secondary vpc private subnet
-resource "aws_route_table_association" "main-secondary-vpc-private" {
-    subnet_id = "${aws_subnet.secondary-private-1.id}"
-    route_table_id = "${aws_route_table.secondary-vpc-private.id}"
-}
 
-
-
-# Make AWS account ID available. 
+# Make AWS account ID available.
 data "aws_caller_identity" "current" {}
 
 # VPC peering connection
@@ -197,28 +148,75 @@ resource "aws_vpc_peering_connection" "primary2secondary" {
   }
 }
 
-/**
- * Route rule.
- *
- * Creates a new route rule on the "primary" VPC main route table. All requests
- * to the "secondary" VPC's IP range will be directed to the VPC peering
- * connection.
- */
-resource "aws_route" "primary2secondary" {
-  route_table_id = "${aws_route_table.primary-vpc-public.id}"
-  destination_cidr_block = "${aws_vpc.secondary-vpc.cidr_block}"
-  vpc_peering_connection_id = "${aws_vpc_peering_connection.primary2secondary.id}"
+
+# Creating routing table for primary vpc
+resource "aws_route_table" "primary-vpc-public" {
+    vpc_id = "${aws_vpc.primary-vpc.id}"
+    route {
+        cidr_block = "0.0.0.0/0"
+        gateway_id = "${aws_internet_gateway.primary-vpc-igw.id}"
+    }
+    route {
+        cidr_block = "${aws_vpc.secondary-vpc.cidr_block}"
+        vpc_peering_connection_id = "${aws_vpc_peering_connection.primary2secondary.id}"
+    }
+
+    tags {
+        Name = "primary-vpc-public"
+    }
 }
 
-/**
- * Route rule.
- *
- * Creates a new route rule on the "secondary" VPC main route table. All
- * requests to the "secondary" VPC's IP range will be directed to the VPC
- * peering connection.
- */
-resource "aws_route" "secondary2primary" {
-  route_table_id = "${aws_route_table.secondary-vpc-public.id}"
-  destination_cidr_block = "${aws_vpc.primary-vpc.cidr_block}"
-  vpc_peering_connection_id = "${aws_vpc_peering_connection.primary2secondary.id}"
+
+
+# Creating route table for secondary vpc
+resource "aws_route_table" "secondary-vpc-public" {
+    vpc_id = "${aws_vpc.secondary-vpc.id}"
+    route {
+        cidr_block = "0.0.0.0/0"
+        gateway_id = "${aws_internet_gateway.secondary-vpc-igw.id}"
+    }
+    route {
+        cidr_block = "${aws_vpc.primary-vpc.cidr_block}"
+        vpc_peering_connection_id = "${aws_vpc_peering_connection.primary2secondary.id}"
+    }
+
+    tags {
+        Name = "secondary-vpc-public"
+    }
 }
+
+
+
+
+# route associations for secondary vpc public subnet
+resource "aws_route_table_association" "main-secondary-vpc-public" {
+    subnet_id = "${aws_subnet.secondary-public-1.id}"
+    route_table_id = "${aws_route_table.secondary-vpc-public.id}"
+}
+
+
+
+# Associating route table to primary public subnet
+resource "aws_route_table_association" "main-primary-vpc-public" {
+    subnet_id = "${aws_subnet.primary-public-1.id}"
+    route_table_id = "${aws_route_table.primary-vpc-public.id}"
+}
+
+
+# route associations for secondary vpc private subnet
+resource "aws_route_table_association" "main-secondary-vpc-private" {
+    subnet_id = "${aws_subnet.secondary-private-1.id}"
+    route_table_id = "${aws_route_table.secondary-vpc-private.id}"
+}
+
+
+# Associating route table to private subnet
+resource "aws_route_table_association" "main-primary-vpc-private" {
+    subnet_id = "${aws_subnet.primary-private-1.id}"
+    route_table_id = "${aws_route_table.primary-vpc-private.id}"
+}
+
+
+
+
+

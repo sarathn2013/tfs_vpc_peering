@@ -14,7 +14,7 @@
 
 # provider "aws"{
 #     access_key = "${var.access_key}"   
-#     aws_secret_key = "${var.secret_key}"
+#     secret_key = "${var.secret_key}"
 #     region = "${var.region}"
 # }
 
@@ -31,7 +31,7 @@
 
 # variable "AMIS" {
 #  default = {
-#    us-east-1 = "ami-13be557e"
+#    us-east-2 = "ami-618fab04"
 #  }
 # }
 
