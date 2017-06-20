@@ -114,7 +114,7 @@ resource "aws_internet_gateway" "secondary-vpc-igw" {
     vpc_id = "${aws_vpc.secondary-vpc.id}"
 
     tags {
-        Name = "primary-vpc-igw"
+        Name = "secondary-vpc-igw"
     }
 }
 
